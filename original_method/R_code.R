@@ -1,4 +1,4 @@
-##Recreation of the original 'Success with style' experiment using original data
+##Recreation of the original 'Success with style' experiment using original data with downloads and books from 2013-10-24
 
 ##Hypotheses
 
@@ -14,8 +14,8 @@
 #libraries
 library(tidyverse); library(ggpubr); library(readxl);library(caret);library(caretEnsemble);library(Hmisc);library(bestNormalize);library(data.table)
 
-#setwd
-setwd("[SET YOUR WORK DIRECTORY]")
+#setwd if needed
+#setwd("/")
 
 #load proportional data
 df<- read_excel("readability_data.xlsx",sheet = 1) #load proportional data
@@ -23,10 +23,13 @@ names(df)<- tolower(names(df))
 df<- df %>% rename(FR=`fleschkincaid readability`,mSyWo=`mean-syllables-per-word`, mWoSen=`mean-words-per-sentence`)
 
 
-
 #load absolute (original) data
 ef<- read_excel("readability_data.xlsx",sheet = 2) #load absolute original data
 names(ef)<- tolower(names(ef))
+
+
+#setwd if needed
+#setwd("/")
 
 ##Draw by each 10
 
@@ -100,6 +103,16 @@ ndf<- data.frame(cont,cat) #combine good vars
 #scale and plot FR,mWoSen,mSyWo
 train %>% select(ranking,mWoSen,mSyWo,FR) %>% mutate_at(vars(mWoSen:FR),log) %>% mutate_at(vars(mWoSen:FR),scale) %>%  gather(key,value,-ranking) %>% 
   ggboxplot("key","value",fill="ranking",ggtheme = theme_minimal(),palette = "jco",legend="top",xlab="") +stat_compare_means(aes(group=ranking),method = "t.test")
+
+
+ggsave("Readability, mean words per sentence and mean syllables per word - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
+
+
+
 
 ndf2<- train %>% select(FR,mWoSen,mSyWo) %>% mutate_all(log) %>%  mutate_all(function(x){
   f1<- bestNormalize(x)
@@ -188,23 +201,61 @@ gg5<- gg4 %>% gather(POS,diff,-genre)
 
 ##ff dataframe
 
-ggbarplot("POS","diff",data=ff5[1:80,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (selected tags)") + 
-  ylim(c(-0.005,0.015))
+ggbarplot("POS","diff",data=ff5[1:80,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (selected tags)")
 
-ggbarplot("POS","diff",data=ff5[81:160,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (selected tags)") + 
-  ylim(c(-0.025,0.015))
+ggsave("Difference in proportion (original tags) rb-vbz - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
 
-ggbarplot("POS","diff",data=ff5[161:176,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (selected tags)")
+ggbarplot("POS","diff",data=ff5[81:168,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (selected tags)")
+
+
+ggsave("Difference in proportion (original tags) wp-prp - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
+
 
 ##gg dataframe (ggbarplot sometimes crashes here but re-runnning it solves it)
 
 ggbarplot("POS","diff",data=gg5[1:80,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (all tags)") 
 
+
+ggsave("Difference in proportion (all tags) cc-ls - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
+
 ggbarplot("POS","diff",data=gg5[81:160,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (all tags)")
+
+ggsave("Difference in proportion (all tags) md-rbs - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
 
 ggbarplot("POS","diff",data=gg5[161:240,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (all tags)")
 
-ggbarplot("POS","diff",data=gg5[241:320,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (all tags)")
+ggsave("Difference in proportion (all tags) sym-wdt - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
+
+
+ggbarplot("POS","diff",data=gg5[241:264,],fill="genre",legend="right",palette = "jco", position=position_dodge(),ggtheme = theme_minimal(),ylab = "Difference in proportion (all tags)")
+
+
+ggsave("Difference in proportion (all tags) wp-wrb - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
+
 
 
 ##########################################
@@ -276,6 +327,14 @@ fx<- dx %>% mutate_at(vars(FR), function(x){
 
 ggboxplot("genre","FR",fill="rank",data=fx,ggtheme = theme_minimal(),palette = "jco",legend="top",xlab = "Genre") +
   stat_compare_means(aes(group=rank,label = ..p.format..),method = "t.test")
+
+
+ggsave("Readability by genre - original data.png", 
+       plot = last_plot(), 
+       width = 260, height = 171, 
+       units = "mm", # other options c("in", "cm", "mm"), 
+       dpi = 240)
+
 
 #end of code
 
